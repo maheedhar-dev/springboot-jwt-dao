@@ -1,0 +1,29 @@
+CREATE TABLE country (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(10) NOT NULL UNIQUE
+);
+
+CREATE TABLE state (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    country_id BIGINT NOT NULL,
+    CONSTRAINT fk_state_country FOREIGN KEY (country_id) REFERENCES country(id)
+);
+
+CREATE TABLE district (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    state_id BIGINT NOT NULL,
+    CONSTRAINT fk_district_state FOREIGN KEY (state_id) REFERENCES state(id)
+);
+
+CREATE TABLE city (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    district_id BIGINT NOT NULL,
+    CONSTRAINT fk_city_district FOREIGN KEY (district_id) REFERENCES district(id)
+);

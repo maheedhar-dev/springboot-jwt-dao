@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: springboot-jwt-dao
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/mydb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: jwtuser
+      SPRING_DATASOURCE_PASSWORD: jwtpass
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_SHOW_SQL: true
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: true
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQL8Dialect
+      SPRING_FLYWAY_ENABLED: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  db:
+    image: mysql:8.0
+    container_name: jwt-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: jwtuser
+      MYSQL_PASSWORD: jwtpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "jwtuser", "-pjwtpass"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+
